@@ -13,7 +13,7 @@
 
     .container {
         width: 100%;
-        max-width: 650px;
+        max-width: 800px;
         margin: auto;
         padding: 0;
         background: transparent;
@@ -26,12 +26,31 @@
         background: transparent;
     }
 
-    select {
-        padding: 8px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        font-size: 14px;
-        background: #ffffffcc;
+    /* Bouton moteur (Google / SharePoint) */
+    .engine-toggle {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 20px;
+        color: #fff;
+        cursor: pointer;
+        border: none;
+        flex-shrink: 0;
+        box-shadow: 0 0 4px #0003;
+        user-select: none;
+    }
+
+    .engine-toggle.google {
+        background: #4285F4; /* bleu Google */
+    }
+
+    .engine-toggle.sharepoint {
+        background: #008272; /* vert SharePoint */
+        font-size: 16px;
     }
 
     .search-wrapper {
@@ -39,76 +58,118 @@
         width: 100%;
     }
 
-.search-wrapper input[type="text"] {
-    width: 100%;
-    padding: 20px 50px 20px 18px;  
-    font-size: 22px;               
-    border: 2px solid #bbb;        
-    border-radius: 35px;           
-    background: #ffffffcc;
-    box-sizing: border-box;
-}
-
+    /* Barre de recherche bien grosse */
+    .search-wrapper input[type="text"] {
+        width: 100%;
+        padding: 20px 50px 20px 18px;  /* plus de padding = plus de hauteur */
+        font-size: 22px;
+        border: 2px solid #bbb;
+        border-radius: 35px;
+        background: #ffffffcc;
+        box-sizing: border-box;
+    }
 
     .search-wrapper .icon {
         position: absolute;
-        right: 12px;
+        right: 18px;
         top: 50%;
         transform: translateY(-50%);
-        font-size: 18px;
+        font-size: 26px;
         color: #666;
         pointer-events: none;
     }
 
+    button.search-btn {
+        padding: 14px 20px;
+        border-radius: 10px;
+        border: none;
+        background: #F35E00;
+        color: #fff;
+        font-size: 16px;
+        cursor: pointer;
+        flex-shrink: 0;
+        box-shadow: 0 0 4px #0003;
+    }
+    button.search-btn:hover {
+        filter: brightness(0.9);
+    }
 </style>
 </head>
 <body>
     <div class="container">
-
         <form id="searchForm">
 
-            <select id="engine">
-                <option value="google" selected>Google</option>
-                <option value="sharepoint">SCPF (SharePoint)</option>
-            </select>
+            <!-- Bouton moteur -->
+            <div id="engineToggle" class="engine-toggle google" 
+                 title="Recherche Google (cliquer pour basculer sur SharePoint)">
+                G
+            </div>
 
+            <!-- Champ de recherche -->
             <div class="search-wrapper">
                 <input type="text" id="query" placeholder="Recherche..." autocomplete="off">
                 <div class="icon">🔍</div>
             </div>
 
+            <!-- Bouton OK (optionnel, Entrée marche aussi) -->
+            <button type="submit" class="search-btn">OK</button>
         </form>
     </div>
 
 <script>
     const form   = document.getElementById('searchForm');
     const input  = document.getElementById('query');
-    const engine = document.getElementById('engine');
+    const toggle = document.getElementById('engineToggle');
 
-    // 👉 Mets bien ton URL SharePoint ici
+    // moteur courant : "google" ou "sharepoint"
+    let currentEngine = 'google';
+
     const baseUrls = {
         google:     'https://www.google.com/search?q=',
         sharepoint: 'https://ouassimsbai.sharepoint.com/sites/allcompany/_layouts/15/search.aspx/siteall?q='
     };
 
-    // Validation par Entrée (pas de bouton nécessaire)
+    function updateEngineUI() {
+        if (currentEngine === 'google') {
+            toggle.classList.remove('sharepoint');
+            toggle.classList.add('google');
+            toggle.textContent = 'G';
+            toggle.title = 'Recherche Google (cliquer pour basculer sur SharePoint)';
+        } else {
+            toggle.classList.remove('google');
+            toggle.classList.add('sharepoint');
+            toggle.textContent = 'SP';
+            toggle.title = 'Recherche SharePoint (cliquer pour basculer sur Google)';
+        }
+    }
+
+    // clic sur le bouton : on bascule de l’un à l’autre
+    toggle.addEventListener('click', () => {
+        currentEngine = (currentEngine === 'google') ? 'sharepoint' : 'google';
+        updateEngineUI();
+    });
+
+    // soumission (bouton OK ou Entrée)
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         const q = input.value.trim();
         if (!q) return;
 
-        const base = baseUrls[engine.value] || baseUrls.google;
+        const base = baseUrls[currentEngine] || baseUrls.google;
         const url  = base + encodeURIComponent(q);
 
         window.open(url, '_blank');
     });
 
-    // Appui sur Entrée déclenche la recherche
-    input.addEventListener("keydown", function(e) {
-        if (e.key === "Enter") {
-            form.dispatchEvent(new Event("submit"));
+    // Entrée dans le champ = submit
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') {
+            form.dispatchEvent(new Event('submit'));
         }
     });
+
+    // init UI
+    updateEngineUI();
 </script>
 
 </body>
