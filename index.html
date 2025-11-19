@@ -10,6 +10,7 @@
         background: transparent;
         font-family: Arial, sans-serif;
     }
+
     .container {
         width: 100%;
         max-width: 650px;
@@ -17,12 +18,14 @@
         padding: 0;
         background: transparent;
     }
+
     form {
         display: flex;
         gap: 8px;
         align-items: center;
         background: transparent;
     }
+
     select {
         padding: 8px;
         border-radius: 6px;
@@ -30,40 +33,49 @@
         font-size: 14px;
         background: #ffffffcc;
     }
-    input[type="text"] {
-        flex: 1;
-        padding: 10px;
+
+    .search-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .search-wrapper input[type="text"] {
+        width: 100%;
+        padding: 10px 40px 10px 12px; /* espace pour l’icône */
         font-size: 16px;
         border: 1px solid #ccc;
-        border-radius: 8px;
-        background: #ffffffcc;
+        border-radius: 25px;
+        background: #ffffffcc; 
         box-sizing: border-box;
     }
-    button {
-        padding: 10px 14px;
-        border-radius: 8px;
-        border: none;
-        background: #F35E00;
-        color: #fff;
-        font-size: 14px;
-        cursor: pointer;
+
+    .search-wrapper .icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 18px;
+        color: #666;
+        pointer-events: none;
     }
-    button:hover {
-        filter: brightness(0.9);
-    }
+
 </style>
 </head>
 <body>
     <div class="container">
+
         <form id="searchForm">
+
             <select id="engine">
-                <option value="google">Google</option>
+                <option value="google" selected>Google</option>
                 <option value="sharepoint">SCPF (SharePoint)</option>
             </select>
 
-            <input type="text" id="query" placeholder="Recherche..." autocomplete="off">
+            <div class="search-wrapper">
+                <input type="text" id="query" placeholder="Recherche..." autocomplete="off">
+                <div class="icon">🔍</div>
+            </div>
 
-            <button type="submit">OK</button>
         </form>
     </div>
 
@@ -72,12 +84,13 @@
     const input  = document.getElementById('query');
     const engine = document.getElementById('engine');
 
-    // 🔴👉 ADAPTE ICI l’URL SharePoint avec ton tenant / site
+    // 👉 Mets bien ton URL SharePoint ici
     const baseUrls = {
-        sharepoint: 'https://ouassimsbai.sharepoint.com/sites/allcompany/_layouts/15/search.aspx?q=',
-        google:     'https://www.google.com/search?q='
+        google:     'https://www.google.com/search?q=',
+        sharepoint: 'https://ouassimsbai.sharepoint.com/sites/allcompany/_layouts/15/search.aspx/siteall?q='
     };
 
+    // Validation par Entrée (pas de bouton nécessaire)
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         const q = input.value.trim();
@@ -88,6 +101,14 @@
 
         window.open(url, '_blank');
     });
+
+    // Appui sur Entrée déclenche la recherche
+    input.addEventListener("keydown", function(e) {
+        if (e.key === "Enter") {
+            form.dispatchEvent(new Event("submit"));
+        }
+    });
 </script>
+
 </body>
 </html>
