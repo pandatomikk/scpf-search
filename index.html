@@ -2,47 +2,92 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Recherche SCPF</title>
+<title>Recherche</title>
 <style>
-    body {
+    html, body {
         margin: 0;
-        padding: 20px;
+        padding: 0;
+        background: transparent;
         font-family: Arial, sans-serif;
-        background: #f5f5f5;
     }
-    h1 {
-        font-size: 20px;
-        margin-bottom: 10px;
-        color: #333;
-    }
-    .searchBox {
+    .container {
         width: 100%;
-        max-width: 600px;
+        max-width: 650px;
         margin: auto;
+        padding: 0;
+        background: transparent;
+    }
+    form {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        background: transparent;
+    }
+    select {
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+        background: #ffffffcc;
     }
     input[type="text"] {
-        width: 100%;
-        padding: 12px;
-        font-size: 18px;
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
         border: 1px solid #ccc;
         border-radius: 8px;
+        background: #ffffffcc;
         box-sizing: border-box;
     }
-    .logo {
-        text-align: center;
-        font-weight: bold;
-        color: #F35E00;
-        margin-bottom: 10px;
+    button {
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: none;
+        background: #F35E00;
+        color: #fff;
+        font-size: 14px;
+        cursor: pointer;
+    }
+    button:hover {
+        filter: brightness(0.9);
     }
 </style>
 </head>
 <body>
-    <div class="searchBox">
-        <div class="logo">Centre de ressources SCPF</div>
-        <h1>Recherche web</h1>
-        <form action="https://duckduckgo.com/" method="GET" target="_blank">
-            <input type="text" name="q" placeholder="Rechercher sur le web...">
+    <div class="container">
+        <form id="searchForm">
+            <select id="engine">
+                <option value="sharepoint">SCPF (SharePoint)</option>
+                <option value="google">Google</option>
+            </select>
+
+            <input type="text" id="query" placeholder="Recherche..." autocomplete="off">
+
+            <button type="submit">OK</button>
         </form>
     </div>
+
+<script>
+    const form   = document.getElementById('searchForm');
+    const input  = document.getElementById('query');
+    const engine = document.getElementById('engine');
+
+    // 🔴👉 ADAPTE ICI l’URL SharePoint avec ton tenant / site
+    const baseUrls = {
+        sharepoint: 'https://scpf.sharepoint.com/sites/AllCompany/_layouts/15/search.aspx?q=',
+        google:     'https://www.google.com/search?q='
+    };
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const q = input.value.trim();
+        if (!q) return;
+
+        const base = baseUrls[engine.value] || baseUrls.google;
+        const url  = base + encodeURIComponent(q);
+
+        window.open(url, '_blank');
+    });
+</script>
 </body>
 </html>
